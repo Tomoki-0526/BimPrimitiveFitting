@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="头文件\algorithm">
+      <UniqueIdentifier>{82be6d8a-30d5-474c-a772-7b4b134d528e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\algorithm">
+      <UniqueIdentifier>{a28d30a6-a9a7-4cde-acdd-06cf9e9f2a44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\geometry">
+      <UniqueIdentifier>{ad6d7113-2c6b-42d7-b669-07ce1f89baa4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\geometry">
+      <UniqueIdentifier>{6f19b067-825f-4c04-9898-01347a003943}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\visualization">
+      <UniqueIdentifier>{b7cc14b4-52b5-434d-9411-b66c4193f9dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\visualization">
+      <UniqueIdentifier>{e675f898-2aa5-4585-8e9c-1f6a6b8e4759}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Kernel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="io.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="clustering.cpp">
+      <Filter>源文件\algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="find_peaks.cpp">
+      <Filter>源文件\algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="normals.cpp">
+      <Filter>源文件\algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="surface.cpp">
+      <Filter>源文件\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="cylinder.cpp">
+      <Filter>源文件\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="torus.cpp">
+      <Filter>源文件\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="vis.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ransac.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="io.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="clustering.h">
+      <Filter>头文件\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="find_peaks.h">
+      <Filter>头文件\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="normals.h">
+      <Filter>头文件\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="surface.h">
+      <Filter>头文件\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="cylinder.h">
+      <Filter>头文件\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="torus.h">
+      <Filter>头文件\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="global.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vis.h">
+      <Filter>头文件\visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="ransac.h">
+      <Filter>头文件\algorithm</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
