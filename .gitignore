@@ -400,5 +400,4 @@ FodyWeavers.xsd
 *.sln.iml
 
 # Others
-.x64/*
-.Kernel/x64/*
+x64/*
