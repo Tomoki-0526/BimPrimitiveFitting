@@ -7,24 +7,39 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
+#include <CGAL/property_map.h>
+#include <CGAL/Point_with_normal_3.h>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Shape_detection/Efficient_RANSAC.h>
+
+typedef CGAL::Exact_predicates_inexact_constructions_kernel		CGALKernel;
+typedef std::pair<CGALKernel::Point_3, CGALKernel::Vector_3>	CGALPoint;
+typedef std::vector<CGALPoint>									CGALCloud;
+typedef CGAL::First_of_pair_property_map<CGALPoint>				Point_map;
+typedef CGAL::Second_of_pair_property_map<CGALPoint>			Normal_map;
+
+typedef CGAL::Shape_detection::Efficient_RANSAC_traits
+<CGALKernel, CGALCloud, Point_map, Normal_map>			Traits;
+typedef CGAL::Shape_detection::Efficient_RANSAC<Traits> EfficientRansac;
+typedef CGAL::Shape_detection::Cone<Traits>				CGALCone;
+typedef CGAL::Shape_detection::Cylinder<Traits>			CGALCylinder;
+typedef CGAL::Shape_detection::Plane<Traits>			CGALPlane;
+typedef CGAL::Shape_detection::Sphere<Traits>			CGALSphere;
+typedef CGAL::Shape_detection::Torus<Traits>			CGALTorus;
+
 namespace kernel {
 	namespace alg {
-		struct ransac_config {
-			ransac_config(bim_category bim_type, float eps = 0.1f);
+		EfficientRansac::Parameters get_ransac_params(
+			float epsilon, 
+			int min_points = 500,
+			float deg_deviation = 25,
+		);
 
-			bim_category bim_type;
-
-			float epsilon;					// max distance to primitive
-			int min_pts_num;				// min support number of points for a primitive patch
-			float max_nor_dev;				// max normal deviation
-			float cyl_min_radius;			// min radius for cylinder
-			float cyl_max_radius;			// max radius for cylinder
-			float tor_min_minor_radius;		// min minor radius for torus
-			float tor_min_major_radius;		// min major radius for torus
-			float tor_max_minor_radius;		// max minor radius for torus
-			float tor_max_major_radius;		// max major radius for torus
-		};
-
-		bool ransac(const pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, const pcl::PointCloud<pcl::Normal>::Ptr normals, std::initializer_list<primitive_type> prim_types);
+		EfficientRansac::Shape_range ransac(
+			const pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, 
+			const pcl::PointCloud<pcl::Normal>::Ptr normals, 
+			std::initializer_list<primitive_type> prim_types,
+			const EfficientRansac::Parameters& params
+		);
 	}
 }

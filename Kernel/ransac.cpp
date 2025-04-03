@@ -1,61 +1,20 @@
 #include "ransac.h"
 
-#include <limits>
-
-#include <CGAL/property_map.h>
-#include <CGAL/Point_with_normal_3.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Shape_detection/Efficient_RANSAC.h>
-
-using CGALKernel = CGAL::Exact_predicates_inexact_constructions_kernel;
-using CGALPoint = std::pair<CGALKernel::Point_3, CGALKernel::Vector_3>;
-using CGALCloud = std::vector<CGALPoint>;
-using PointMap = CGAL::First_of_pair_property_map<CGALPoint>;
-using NormalMap = CGAL::Second_of_pair_property_map<CGALPoint>;
-
-using Traits = CGAL::Shape_detection::Efficient_RANSAC_traits<CGALKernel, CGALCloud, PointMap, NormalMap>;
-using EfficientRansac = CGAL::Shape_detection::Efficient_RANSAC<Traits>;
-using CGALPlane = CGAL::Shape_detection::Plane<Traits>;
-using CGALCylinder = CGAL::Shape_detection::Cylinder<Traits>;
-using CGALSphere = CGAL::Shape_detection::Sphere<Traits>;
-using CGALCone = CGAL::Shape_detection::Cone<Traits>;
-using CGALTorus = CGAL::Shape_detection::Torus<Traits>;
-
-kernel::alg::ransac_config::ransac_config(bim_category bim_type, float eps)
-	: bim_type(bim_type)
-	, epsilon(eps)
-	, min_pts_num(500)
-	, max_nor_dev(25.0f)
-	, cyl_min_radius(0.0f)
-	, cyl_max_radius(std::numeric_limits<float>::max())
-	, tor_min_minor_radius(0.0f)
-	, tor_min_major_radius(0.0f)
-	, tor_max_minor_radius(std::numeric_limits<float>::max())
-	, tor_max_major_radius(std::numeric_limits<float>::max())
+EfficientRansac::Parameters kernel::alg::get_ransac_params(float epsilon, int min_points, float deg_deviation)
 {
-	switch (bim_type) {
-	case bim_category::wall: {
+	EfficientRansac::Parameters params;
 
-	}break;
-	case bim_category::column: {
+	params.probability = 0.01;
+	params.cluster_epsilon = 0.1;
 
-	}break;
-	case bim_category::curtainwall: {
+	params.min_points = min_points;
+	params.epsilon = epsilon;
+	params.normal_threshold = std::cosf(deg_deviation * M_PI / 180);
 
-	}break;
-	case bim_category::pipe: {
-
-	}break;
-	case bim_category::none: {
-
-	}break;
-	default: {
-
-	}break;
-	}
+	return params;
 }
 
-bool kernel::alg::ransac(const pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, const pcl::PointCloud<pcl::Normal>::Ptr normals, std::initializer_list<primitive_type> prim_types)
+EfficientRansac::Shape_range kernel::alg::ransac(const pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, const pcl::PointCloud<pcl::Normal>::Ptr normals, std::initializer_list<primitive_type> prim_types, const EfficientRansac::Parameters& params)
 {
     CGALCloud cgal_cloud;
 	for (size_t i = 0; i < xyz->size(); ++i)
@@ -87,7 +46,8 @@ bool kernel::alg::ransac(const pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, const pc
 			break;
 		}
 	}
+	ransac.detect(params);
 
-	ransac.detect();
+	return ransac.shapes();
 }
 
