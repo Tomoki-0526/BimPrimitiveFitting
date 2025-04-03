@@ -57,11 +57,11 @@
     <ClCompile Include="torus.cpp">
       <Filter>源文件\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="vis.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="ransac.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="vis.cpp">
+      <Filter>源文件\visualization</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

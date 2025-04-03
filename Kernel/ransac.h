@@ -32,7 +32,7 @@ namespace kernel {
 		EfficientRansac::Parameters get_ransac_params(
 			float epsilon, 
 			int min_points = 500,
-			float deg_deviation = 25,
+			float deg_deviation = 25
 		);
 
 		EfficientRansac::Shape_range ransac(
