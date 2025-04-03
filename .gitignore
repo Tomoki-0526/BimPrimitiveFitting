@@ -401,4 +401,4 @@ FodyWeavers.xsd
 
 # Others
 .x64/*
-.Kernel/x64
+.Kernel/x64/*
