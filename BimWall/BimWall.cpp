@@ -84,10 +84,10 @@ auto main(int argc, char** argv) -> int
 	}
 
 	pcl::getMinMax3D(*non_planar_xyz, min_pt, max_pt);
-	float dx = max_pt.x - min_pt.x;
-	float dy = max_pt.y - min_pt.y;
-	float dz = max_pt.z - min_pt.z;
-	float scale = std::max({ dx, dy, dz });
+	dx = max_pt.x - min_pt.x;
+	dy = max_pt.y - min_pt.y;
+	dz = max_pt.z - min_pt.z;
+	scale = std::max({ dx, dy, dz });
 	kernel::alg::epsilon = 0.01f * scale;
 
 	// fit shapes
@@ -101,7 +101,7 @@ auto main(int argc, char** argv) -> int
 
 			const auto& p = cyl->point_on_axis();
 			const auto& n = cyl->axis().to_vector();
-			const auto& r = cyl->radius();
+			float r = cyl->radius();
 			if (std::abs(n.z()) < 0.9) {
 				std::cout << std::format("axis ({}, {}, {}) inclined", n.x(), n.y(), n.z()) << std::endl;
 				continue;
@@ -113,7 +113,9 @@ auto main(int argc, char** argv) -> int
 
 			std::cout << "ok" << std::endl;
 			auto wall_cloud = kernel::utils::extract_points_by_indices(non_planar_xyz, cyl->indices_of_assigned_points());
-			auto wall = bim_wall::wall(wall_cloud, { p.x(), p.y(), p.z() }, { n.x(), n.y(), n.z() }, r);
+			float x = p.x(), y = p.y(), z = p.z();
+			float nx = n.x(), ny = n.y(), nz = n.z();
+			auto wall = bim_wall::wall(wall_cloud, { x, y, z }, { nx, ny, nz }, r);
 			walls.push_back(wall);
 		}
 	}
