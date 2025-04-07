@@ -5,11 +5,15 @@
 
 #include <pcl/io/ply_io.h>
 #include <pcl/common/common.h>
+#include <pcl/filters/extract_indices.h>
 
 #include "Kernel/global.h"
 #include "Kernel/io.h"
 #include "Kernel/normal.h"
 #include "Kernel/ransac.h"
+#include "Kernel/utils.h"
+
+#include "wall.h"
 
 namespace fs = std::filesystem;
 
@@ -88,6 +92,7 @@ auto main(int argc, char** argv) -> int
 
 	// fit shapes
 	std::cout << "Fitting shapes..." << std::endl;
+	std::vector<bim_wall::wall> walls;
 	ransac_params = kernel::alg::get_ransac_params(kernel::alg::epsilon, kernel::alg::min_points, kernel::alg::deg_deviation);
 	shapes = kernel::alg::ransac(non_planar_xyz, non_planar_normals, ransac_params, { kernel::primitive_type::cylinder });
 	for (auto it = shapes.begin(); it != shapes.end(); ++it) {
@@ -95,10 +100,10 @@ auto main(int argc, char** argv) -> int
 			std::cout << std::format("[Cylinder #{}] ", it - shapes.begin() + 1);
 
 			const auto& p = cyl->point_on_axis();
-			const auto& n = cyl->axis();
+			const auto& n = cyl->axis().to_vector();
 			const auto& r = cyl->radius();
-			if (std::abs(n.to_vector().z()) < 0.9) {
-				std::cout << std::format("axis ({}, {}, {}) inclined", n.to_vector().x(), n.to_vector().y(), n.to_vector().z()) << std::endl;
+			if (std::abs(n.z()) < 0.9) {
+				std::cout << std::format("axis ({}, {}, {}) inclined", n.x(), n.y(), n.z()) << std::endl;
 				continue;
 			}
 			if (r < kernel::alg::cyl_min_r || r > kernel::alg::cyl_max_r) {
@@ -107,6 +112,9 @@ auto main(int argc, char** argv) -> int
 			}
 
 			std::cout << "ok" << std::endl;
+			auto wall_cloud = kernel::utils::extract_points_by_indices(non_planar_xyz, cyl->indices_of_assigned_points());
+			auto wall = bim_wall::wall(wall_cloud, { p.x(), p.y(), p.z() }, { n.x(), n.y(), n.z() }, r);
+			walls.push_back(wall);
 		}
 	}
 #pragma endregion

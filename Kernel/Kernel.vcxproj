@@ -143,6 +143,7 @@
     <ClCompile Include="ransac.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="torus.cpp" />
+    <ClCompile Include="utils.cpp" />
     <ClCompile Include="vis.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -155,6 +156,7 @@
     <ClInclude Include="ransac.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="torus.h" />
+    <ClInclude Include="utils.h" />
     <ClInclude Include="vis.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

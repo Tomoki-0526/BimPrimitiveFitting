@@ -18,5 +18,13 @@
     <ClCompile Include="BimWall.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="wall.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="wall.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

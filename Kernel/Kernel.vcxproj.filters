@@ -63,6 +63,9 @@
     <ClCompile Include="vis.cpp">
       <Filter>源文件\visualization</Filter>
     </ClCompile>
+    <ClCompile Include="utils.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="io.h">
@@ -94,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="ransac.h">
       <Filter>头文件\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
