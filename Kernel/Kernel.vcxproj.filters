@@ -45,7 +45,7 @@
     <ClCompile Include="find_peaks.cpp">
       <Filter>源文件\algorithm</Filter>
     </ClCompile>
-    <ClCompile Include="normals.cpp">
+    <ClCompile Include="normal.cpp">
       <Filter>源文件\algorithm</Filter>
     </ClCompile>
     <ClCompile Include="surface.cpp">
@@ -74,7 +74,7 @@
     <ClInclude Include="find_peaks.h">
       <Filter>头文件\algorithm</Filter>
     </ClInclude>
-    <ClInclude Include="normals.h">
+    <ClInclude Include="normal.h">
       <Filter>头文件\algorithm</Filter>
     </ClInclude>
     <ClInclude Include="surface.h">

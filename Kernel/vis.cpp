@@ -4,14 +4,14 @@
 
 #include <pcl/visualization/pcl_visualizer.h>
 
-void kernel::vis::show_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
+auto kernel::vis::show_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud) -> void
 {
     pcl::visualization::PCLVisualizer viewer;
     viewer.addPointCloud(cloud);
     viewer.spin();
 }
 
-void kernel::vis::show_cloud(pcl::PointCloud<pcl::PointNormal>::Ptr cloud)
+auto kernel::vis::show_cloud(pcl::PointCloud<pcl::PointNormal>::Ptr cloud) -> void
 {
     auto xyz = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
     auto normals = std::make_shared<pcl::PointCloud<pcl::Normal>>();
@@ -20,14 +20,14 @@ void kernel::vis::show_cloud(pcl::PointCloud<pcl::PointNormal>::Ptr cloud)
     show_cloud(xyz, normals);
 }
 
-void kernel::vis::show_cloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud)
+auto kernel::vis::show_cloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud) -> void
 {
     pcl::visualization::PCLVisualizer viewer;
     viewer.addPointCloud(cloud);
     viewer.spin();
 }
 
-void kernel::vis::show_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, pcl::PointCloud<pcl::Normal>::Ptr normals)
+auto kernel::vis::show_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, pcl::PointCloud<pcl::Normal>::Ptr normals) -> void
 {
     pcl::visualization::PCLVisualizer viewer;
     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> points_color(xyz, 0, 255, 0);
@@ -36,7 +36,7 @@ void kernel::vis::show_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, pcl::Point
     viewer.spin();
 }
 
-pcl::PointCloud<pcl::PointXYZRGB>::Ptr kernel::vis::get_colored_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, const std::vector<pcl::PointIndices>& clusters_indices)
+auto kernel::vis::get_colored_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, const std::vector<pcl::PointIndices>& clusters_indices) -> pcl::PointCloud<pcl::PointXYZRGB>::Ptr
 {
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud;
 
@@ -79,7 +79,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr kernel::vis::get_colored_cloud(pcl::Point
     return colored_cloud;
 }
 
-pcl::PointCloud<pcl::PointXYZRGB>::Ptr kernel::vis::get_colored_cloud(const std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>& clouds)
+auto kernel::vis::get_colored_cloud(const std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>& clouds) -> pcl::PointCloud<pcl::PointXYZRGB>::Ptr
 {
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud;
 

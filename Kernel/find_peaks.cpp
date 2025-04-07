@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-std::vector<int> kernel::alg::find_peaks(std::vector<double> x, std::vector<double> plateau_size, std::vector<double> height, std::vector<double> threshold, int distance, std::vector<double> prominence, int wlen, std::vector<double> width, double rel_height)
+auto kernel::alg::find_peaks(std::vector<double> x, std::vector<double> plateau_size, std::vector<double> height, std::vector<double> threshold, int distance, std::vector<double> prominence, int wlen, std::vector<double> width, double rel_height) -> std::vector<int>
 {
 	std::vector<int> peaks;
 	for (int i = 1; i < x.size() - 1; i++) {

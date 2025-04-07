@@ -12,9 +12,9 @@ namespace kernel {
 		public:
 			cylinder(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, const Eigen::Vector3f& pos, const Eigen::Vector3f& axis, float radius);
 
-			float dissimilarity(const cylinder& other) const;
-			void merge_cloud(const cylinder& other);
-			int get_degrees(const Eigen::Vector3f& p) const;
+			auto dissimilarity(const cylinder& other) const -> float;
+			auto merge_cloud(const cylinder& other) -> void;
+			auto get_degrees(const Eigen::Vector3f& p) const -> int;
 		};
 	}
 }

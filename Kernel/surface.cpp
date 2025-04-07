@@ -12,17 +12,17 @@ kernel::geom::surface::~surface()
 {
 }
 
-bool kernel::geom::surface::is_valid() const
+auto kernel::geom::surface::is_valid() const -> bool
 {
 	return this->valid;
 }
 
-void kernel::geom::surface::set_valid(bool valid)
+auto kernel::geom::surface::set_valid(bool valid) -> void
 {
 	this->valid = valid;
 }
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr kernel::geom::surface::get_cloud() const
+auto kernel::geom::surface::get_cloud() const -> pcl::PointCloud<pcl::PointXYZ>::Ptr
 {
 	return this->cloud;
 }

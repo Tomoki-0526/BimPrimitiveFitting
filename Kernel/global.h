@@ -18,4 +18,10 @@ namespace kernel {
 		cone,
 		torus,
 	};
+
+	// cloud attributes
+	extern float	base_elev;
+	extern float	top_elev;
+	extern float	floor_height;
+
 }

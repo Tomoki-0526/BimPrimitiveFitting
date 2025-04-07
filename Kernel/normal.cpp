@@ -1,4 +1,4 @@
-#include "normals.h"
+#include "normal.h"
 
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/filter_indices.h>
@@ -6,7 +6,7 @@
 
 #include <open3d/geometry/PointCloud.h>
 
-void kernel::alg::normal_estimation(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, pcl::PointCloud<pcl::Normal>::Ptr normals, int k)
+auto kernel::alg::normal_estimate(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, pcl::PointCloud<pcl::Normal>::Ptr normals, int k) -> void
 {
 	assert(k > 0);
 
@@ -18,7 +18,7 @@ void kernel::alg::normal_estimation(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, pcl
 	ne.compute(*normals);
 }
 
-void kernel::alg::normal_reorientation(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, pcl::PointCloud<pcl::Normal>::Ptr normals, int k)
+auto kernel::alg::normal_orient(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, pcl::PointCloud<pcl::Normal>::Ptr normals, int k) -> void
 {
 	assert(k > 0);
 
@@ -35,7 +35,7 @@ void kernel::alg::normal_reorientation(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, 
 	}
 }
 
-void kernel::alg::curvature_estimation(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, pcl::PointCloud<pcl::Normal>::Ptr normals, int k)
+auto kernel::alg::curvature_estimate(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, pcl::PointCloud<pcl::Normal>::Ptr normals, int k) -> void
 {
 	assert(k > 0);
 

@@ -7,25 +7,37 @@
 
 #include <nlohmann/json.hpp>
 
+namespace fs = std::filesystem;
+
 namespace kernel {
 	namespace io {
-		// point cloud data
-		void load_txt_cloud(
-			const std::filesystem::path& path, 
-			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, 
-			char delim = ' '
-		);
+		class args {
+		public:
+			fs::path input_file;
+			fs::path output_dir;
 
-		void save_txt_cloud(
-			const std::filesystem::path& path, 
-			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, 
+			args(int argc, char** argv);
+		};
+
+		// point cloud data
+		auto load_cloud(const fs::path& path) -> pcl::PointCloud<pcl::PointXYZ>::Ptr;
+
+		auto load_txt_cloud(
+			const fs::path& path,
+			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+			char delim = ' '
+		) -> void;
+
+		auto save_txt_cloud(
+			const fs::path& path,
+			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
 			const char delim = ' '
-		);
+		) -> void;
 
 		// json
-		void save_json(
-			const std::filesystem::path& path,
+		auto save_json(
+			const fs::path& path,
 			const nlohmann::json& obj
-		);
+		) -> void;
 	}
 }

@@ -15,7 +15,7 @@ namespace kernel {
 		 width: ²¨·åµÄ¿í¶È
 		 rel_height:
 		 */
-		std::vector<int> find_peaks(
+		auto find_peaks(
 			std::vector<double> x, 
 			std::vector<double> plateau_size = {}, 
 			std::vector<double> height = {}, 
@@ -25,6 +25,6 @@ namespace kernel {
 			int wlen = 2, 
 			std::vector<double> width = {}, 
 			double rel_height = 0.5
-		);
+		) -> std::vector<int>;
 	}
 }

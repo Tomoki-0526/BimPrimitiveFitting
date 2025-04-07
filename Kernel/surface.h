@@ -18,9 +18,9 @@ namespace kernel {
 			surface(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, const Eigen::Vector3f& pos, const Eigen::Vector3f& axis);
 			virtual ~surface() = 0;
 
-			bool is_valid() const;
-			void set_valid(bool valid);
-			pcl::PointCloud<pcl::PointXYZ>::Ptr get_cloud() const;
+			auto is_valid() const -> bool;
+			auto set_valid(bool valid) -> void;
+			auto get_cloud() const -> pcl::PointCloud<pcl::PointXYZ>::Ptr;
 		};
 	}
 }

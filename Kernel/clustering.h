@@ -6,7 +6,7 @@
 
 namespace kernel {
 	namespace alg {
-		void region_growing(
+		auto region_growing(
 			pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, 
 			pcl::PointCloud<pcl::Normal>::Ptr normals, 
 			int min_cluster_size, 
@@ -15,20 +15,20 @@ namespace kernel {
 			float smoothness_threshold, 
 			float curvature_threshold, 
 			std::vector<pcl::PointIndices>& clusters_indices
-		);
+		) -> void;
 
-		void dbscan(
-			pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, 
-			int min_cluster_size, 
-			int max_cluster_size, 
-			float radius, 
+		auto dbscan(
+			pcl::PointCloud<pcl::PointXYZ>::Ptr xyz,
+			int min_cluster_size,
+			int max_cluster_size,
+			float radius,
 			std::vector<pcl::PointIndices>& clusters_indices
-		);
+		) -> void;
 
-		void knn(
-			pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, 
-			int k, 
+		auto knn(
+			pcl::PointCloud<pcl::PointXYZ>::Ptr xyz,
+			int k,
 			std::vector<std::vector<int>>& indices
-		);
+		) -> void;
 	}
 }

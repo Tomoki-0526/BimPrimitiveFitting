@@ -5,7 +5,7 @@
 #include <pcl/segmentation/region_growing.h>
 #include <pcl/segmentation/extract_clusters.h>
 
-void kernel::alg::region_growing(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, pcl::PointCloud<pcl::Normal>::Ptr normals, int min_cluster_size, int max_cluster_size, int k, float smoothness_threshold, float curvature_threshold, std::vector<pcl::PointIndices>& clusters_indices)
+auto kernel::alg::region_growing(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, pcl::PointCloud<pcl::Normal>::Ptr normals, int min_cluster_size, int max_cluster_size, int k, float smoothness_threshold, float curvature_threshold, std::vector<pcl::PointIndices>& clusters_indices) -> void
 {
 	auto reg = std::make_shared<pcl::RegionGrowing<pcl::PointXYZ, pcl::Normal>>();
 	auto tree = std::make_shared<pcl::search::KdTree<pcl::PointXYZ>>();
@@ -24,7 +24,7 @@ void kernel::alg::region_growing(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, pcl::P
 		});
 }
 
-void kernel::alg::dbscan(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, int min_cluster_size, int max_cluster_size, float radius, std::vector<pcl::PointIndices>& clusters_indices)
+auto kernel::alg::dbscan(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, int min_cluster_size, int max_cluster_size, float radius, std::vector<pcl::PointIndices>& clusters_indices) -> void
 {
 	pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
 	auto tree = std::make_shared<pcl::search::KdTree<pcl::PointXYZ>>();
@@ -36,7 +36,7 @@ void kernel::alg::dbscan(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, int min_cluste
 	ec.extract(clusters_indices);
 }
 
-void kernel::alg::knn(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, int k, std::vector<std::vector<int>>& indices)
+auto kernel::alg::knn(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, int k, std::vector<std::vector<int>>& indices) -> void
 {
 	int n = xyz->size();
 

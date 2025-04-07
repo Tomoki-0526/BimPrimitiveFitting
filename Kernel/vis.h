@@ -7,17 +7,17 @@
 namespace kernel {
 	namespace vis {
 		// display
-		void show_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
+		auto show_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud) -> void;
 
-		void show_cloud(pcl::PointCloud<pcl::PointNormal>::Ptr cloud);
+		auto show_cloud(pcl::PointCloud<pcl::PointNormal>::Ptr cloud) -> void;
 
-		void show_cloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud);
+		auto show_cloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud) -> void;
 
-		void show_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr points, pcl::PointCloud<pcl::Normal>::Ptr normals);
+		auto show_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr points, pcl::PointCloud<pcl::Normal>::Ptr normals) -> void;
 
 		// color
-		pcl::PointCloud<pcl::PointXYZRGB>::Ptr get_colored_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, const std::vector<pcl::PointIndices>& clusters_indices);
+		auto get_colored_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, const std::vector<pcl::PointIndices>& clusters_indices) -> pcl::PointCloud<pcl::PointXYZRGB>::Ptr;
 
-		pcl::PointCloud<pcl::PointXYZRGB>::Ptr get_colored_cloud(const std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>& clouds);
+		auto get_colored_cloud(const std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>& clouds) -> pcl::PointCloud<pcl::PointXYZRGB>::Ptr;
 	}
 }
