@@ -1,5 +1,8 @@
 #pragma once
 
+#define DEBUG_ARGUMENTS
+#define DEBUG_RANSAC
+
 namespace kernel {
 	enum bim_category {
 		none,

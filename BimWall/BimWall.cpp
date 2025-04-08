@@ -1,17 +1,18 @@
-﻿#include <iostream>
-#include <string>
-#include <filesystem>
+﻿#include <filesystem>
 #include <format>
+#include <iostream>
+#include <string>
 
-#include <pcl/io/ply_io.h>
 #include <pcl/common/common.h>
 #include <pcl/filters/extract_indices.h>
+#include <pcl/io/ply_io.h>
 
 #include "Kernel/global.h"
 #include "Kernel/io.h"
 #include "Kernel/normal.h"
 #include "Kernel/ransac.h"
 #include "Kernel/utils.h"
+#include "Kernel/vis.h"
 
 #include "wall.h"
 
@@ -36,6 +37,10 @@ auto main(int argc, char** argv) -> int
 #pragma region init
 	// parse arguments
 	kernel::io::args args(argc, argv);
+#ifdef DEBUG_ARGUMENTS
+	args.input_file = "D:\\scan2bim\\ZZ-01\\wall.txt";
+	args.output_dir = "D:\\scan2bim\\ZZ-01\\cgal";
+#endif
 
 	// load point cloud
 	auto xyz = kernel::io::load_cloud(args.input_file);
@@ -71,7 +76,7 @@ auto main(int argc, char** argv) -> int
 	auto non_planar_xyz = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
 	auto non_planar_normals = std::make_shared<pcl::PointCloud<pcl::Normal>>();
 
-	auto ransac_params = kernel::alg::get_ransac_params(kernel::alg::epsilon, kernel::alg::min_points, kernel::alg::deg_deviation);
+	auto ransac_params = kernel::alg::get_ransac_params(0.005 * kernel::alg::epsilon, kernel::alg::min_points, kernel::alg::deg_deviation);
 	auto shapes = kernel::alg::ransac(xyz, normals, ransac_params, { kernel::primitive_type::plane, kernel::primitive_type::cylinder });
 	for (auto it = shapes.begin(); it != shapes.end(); ++it) {
 		if (Cylinder* cyl = dynamic_cast<Cylinder*>(it->get())) {
@@ -95,6 +100,8 @@ auto main(int argc, char** argv) -> int
 	std::vector<bim_wall::wall> walls;
 	ransac_params = kernel::alg::get_ransac_params(kernel::alg::epsilon, kernel::alg::min_points, kernel::alg::deg_deviation);
 	shapes = kernel::alg::ransac(non_planar_xyz, non_planar_normals, ransac_params, { kernel::primitive_type::cylinder });
+	
+	std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> wall_clouds;
 	for (auto it = shapes.begin(); it != shapes.end(); ++it) {
 		if (Cylinder* cyl = dynamic_cast<Cylinder*>(it->get())) {
 			std::cout << std::format("[Cylinder #{}] ", it - shapes.begin() + 1);
@@ -117,8 +124,14 @@ auto main(int argc, char** argv) -> int
 			float nx = n.x(), ny = n.y(), nz = n.z();
 			auto wall = bim_wall::wall(wall_cloud, { x, y, z }, { nx, ny, nz }, r);
 			walls.push_back(wall);
+
+			wall_clouds.push_back(wall_cloud);
 		}
 	}
+#ifdef DEBUG_RANSAC
+	auto colored_cloud = kernel::vis::get_colored_cloud(wall_clouds);
+	kernel::vis::show_cloud(colored_cloud);
+#endif
 #pragma endregion
 }
 
