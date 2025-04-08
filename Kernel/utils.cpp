@@ -18,7 +18,7 @@ auto kernel::utils::extract_points_by_indices(const pcl::PointCloud<pcl::Normal>
 {
 	std::vector<int> int_indices(indices.size());
 	std::transform(indices.begin(), indices.end(), int_indices.begin(), [](size_t idx) { return static_cast<int>(idx); });
-
+	
 	pcl::ExtractIndices<pcl::Normal> extractor;
 	extractor.setInputCloud(cloud);
 	extractor.setIndices(std::make_shared<std::vector<int>>(int_indices));
