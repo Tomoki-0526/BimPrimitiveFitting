@@ -80,11 +80,9 @@ auto main(int argc, char** argv) -> int
 	auto shapes = kernel::alg::ransac(xyz, normals, ransac_params, { kernel::primitive_type::plane, kernel::primitive_type::cylinder });
 	for (auto it = shapes.begin(); it != shapes.end(); ++it) {
 		if (Cylinder* cyl = dynamic_cast<Cylinder*>(it->get())) {
-			const auto& indices = cyl->indices_of_assigned_points();
-			for (auto idx : indices) {
-				non_planar_xyz->push_back(xyz->at(idx));
-				non_planar_normals->push_back(normals->at(idx));
-			}
+			auto& indices = cyl->indices_of_assigned_points();
+			kernel::utils::extract_points_by_indices(xyz, indices, non_planar_xyz);
+			kernel::utils::extract_points_by_indices(normals, indices, non_planar_normals);
 		}
 	}
 
@@ -98,7 +96,7 @@ auto main(int argc, char** argv) -> int
 	// fit shapes
 	std::cout << "Fitting shapes..." << std::endl;
 	std::vector<bim_wall::wall> walls;
-	ransac_params = kernel::alg::get_ransac_params(kernel::alg::epsilon, kernel::alg::min_points, kernel::alg::deg_deviation);
+	ransac_params = kernel::alg::get_ransac_params(0.005 * kernel::alg::epsilon, kernel::alg::min_points, kernel::alg::deg_deviation);
 	shapes = kernel::alg::ransac(non_planar_xyz, non_planar_normals, ransac_params, { kernel::primitive_type::cylinder });
 	
 	std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> wall_clouds;
@@ -110,16 +108,17 @@ auto main(int argc, char** argv) -> int
 			const auto& n = cyl->axis().to_vector();
 			float r = cyl->radius();
 			if (std::abs(n.z()) < 0.9) {
-				std::cout << std::format("axis ({}, {}, {}) inclined", n.x(), n.y(), n.z()) << std::endl;
+				std::cout << std::format("axis ({}, {}, {}) inclined.", n.x(), n.y(), n.z()) << std::endl;
 				continue;
 			}
 			if (r < kernel::alg::cyl_min_r || r > kernel::alg::cyl_max_r) {
-				std::cout << std::format("radius {} out of range: ({}, {})", r, kernel::alg::cyl_min_r, kernel::alg::cyl_max_r) << std::endl;
+				std::cout << std::format("radius {} out of range: ({}, {}).", r, kernel::alg::cyl_min_r, kernel::alg::cyl_max_r) << std::endl;
 				continue;
 			}
 
-			std::cout << "ok" << std::endl;
-			auto wall_cloud = kernel::utils::extract_points_by_indices(non_planar_xyz, cyl->indices_of_assigned_points());
+			std::cout << "accepted." << std::endl;
+			auto wall_cloud = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
+			kernel::utils::extract_points_by_indices(non_planar_xyz, cyl->indices_of_assigned_points(), wall_cloud);
 			float x = p.x(), y = p.y(), z = p.z();
 			float nx = n.x(), ny = n.y(), nz = n.z();
 			auto wall = bim_wall::wall(wall_cloud, { x, y, z }, { nx, ny, nz }, r);

@@ -8,12 +8,14 @@ namespace kernel {
 		// 提取点云中指定索引的点
 		auto extract_points_by_indices(
 			const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud,
-			const std::vector<int>& indices
-		) -> pcl::PointCloud<pcl::PointXYZ>::Ptr;
+			const std::vector<size_t>& indices,
+			pcl::PointCloud<pcl::PointXYZ>::Ptr out_cloud
+		) -> void;
 
 		auto extract_points_by_indices(
-			const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud,
-			const std::vector<size_t>& indices
-		) -> pcl::PointCloud<pcl::PointXYZ>::Ptr;
+			const pcl::PointCloud<pcl::Normal>::Ptr& cloud,
+			const std::vector<size_t>& indices,
+			pcl::PointCloud<pcl::Normal>::Ptr out_cloud
+		) -> void;
 	}
 }
