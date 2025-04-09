@@ -41,14 +41,20 @@ namespace kernel {
 		auto get_ransac_params(
 			float epsilon,
 			int min_points = 500,
-			float deg_deviation = 25
+			float deg_deviation = 25,
+			float cyl_min_r = 0,
+			float cyl_max_r = std::numeric_limits<float>::max(),
+			float tor_min_r = 0,
+			float tor_max_r = std::numeric_limits<float>::max(),
+			float tor_min_R = 0,
+			float tor_max_R = std::numeric_limits<float>::max()
 		) -> Efficient_ransac::Parameters;
 
 		auto ransac(
 			const pcl::PointCloud<pcl::PointXYZ>::Ptr xyz,
 			const pcl::PointCloud<pcl::Normal>::Ptr normals,
 			const Efficient_ransac::Parameters& params,
-			std::initializer_list<primitive_type> prim_types
+			const std::initializer_list<primitive_type>& prim_types
 		) -> Efficient_ransac::Shape_range;
 	}
 }

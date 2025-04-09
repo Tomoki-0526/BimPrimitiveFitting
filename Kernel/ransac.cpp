@@ -1,6 +1,6 @@
 #include "ransac.h"
 
-auto kernel::alg::get_ransac_params(float epsilon, int min_points, float deg_deviation) -> Efficient_ransac::Parameters
+auto kernel::alg::get_ransac_params(float epsilon, int min_points, float deg_deviation, float cyl_min_r, float cyl_max_r, float tor_min_r, float tor_max_r, float tor_min_R, float tor_max_R) -> Efficient_ransac::Parameters
 {
 	Efficient_ransac::Parameters params;
 
@@ -11,10 +11,17 @@ auto kernel::alg::get_ransac_params(float epsilon, int min_points, float deg_dev
 	params.epsilon = epsilon;
 	params.normal_threshold = std::cosf(deg_deviation * M_PI / 180);
 
+	params.cyl_min_radius = cyl_min_r;
+	params.cyl_max_radius = cyl_max_r;
+	params.tor_min_minor_radius = tor_min_r;
+	params.tor_max_minor_radius = tor_max_r;
+	params.tor_min_major_radius = tor_min_R;
+	params.tor_max_major_radius = tor_max_R;
+
 	return params;
 }
 
-auto kernel::alg::ransac(const pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, const pcl::PointCloud<pcl::Normal>::Ptr normals, const Efficient_ransac::Parameters& params, std::initializer_list<primitive_type> prim_types) -> Efficient_ransac::Shape_range
+auto kernel::alg::ransac(const pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, const pcl::PointCloud<pcl::Normal>::Ptr normals, const Efficient_ransac::Parameters& params, const std::initializer_list<primitive_type>& prim_types) -> Efficient_ransac::Shape_range
 {
 	Pwn_vector cgal_cloud;
 	for (size_t i = 0; i < xyz->size(); ++i)
