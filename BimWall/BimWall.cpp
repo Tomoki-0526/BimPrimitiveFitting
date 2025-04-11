@@ -24,7 +24,7 @@ float kernel::top_elev = 0;
 float kernel::floor_height = 0;
 
 // ransac parameters
-float kernel::alg::epsilon = 0;
+float kernel::alg::epsilon = 0.01;
 int kernel::alg::min_points = 500;
 float kernel::alg::deg_deviation = 5.0f;
 float kernel::alg::cyl_min_r = 1.0f;
