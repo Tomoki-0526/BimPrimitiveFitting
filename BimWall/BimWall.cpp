@@ -91,6 +91,9 @@ auto main(int argc, char** argv) -> int
 			kernel::utils::extract_points_by_indices(normals, indices, non_planar_normals);
 		}
 	}
+#ifdef DEBUG_RANSAC
+	kernel::vis::show_cloud(non_planar_xyz);
+#endif
 
 	pcl::getMinMax3D(*non_planar_xyz, min_pt, max_pt);
 	dx = max_pt.x - min_pt.x;
