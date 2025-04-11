@@ -76,7 +76,13 @@ auto main(int argc, char** argv) -> int
 	auto non_planar_xyz = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
 	auto non_planar_normals = std::make_shared<pcl::PointCloud<pcl::Normal>>();
 
-	auto ransac_params = kernel::alg::get_ransac_params(0.005 * kernel::alg::epsilon, kernel::alg::min_points, kernel::alg::deg_deviation);
+	auto ransac_params = kernel::alg::get_ransac_params(
+		kernel::alg::epsilon,
+		kernel::alg::min_points, 
+		kernel::alg::deg_deviation,
+		kernel::alg::cyl_min_r,
+		kernel::alg::cyl_max_r
+	);
 	auto shapes = kernel::alg::ransac(xyz, normals, ransac_params, { kernel::primitive_type::plane, kernel::primitive_type::cylinder });
 	for (auto it = shapes.begin(); it != shapes.end(); ++it) {
 		if (Cylinder* cyl = dynamic_cast<Cylinder*>(it->get())) {
@@ -96,7 +102,13 @@ auto main(int argc, char** argv) -> int
 	// fit shapes
 	std::cout << "Fitting shapes..." << std::endl;
 	std::vector<bim_wall::wall> walls;
-	ransac_params = kernel::alg::get_ransac_params(0.005 * kernel::alg::epsilon, kernel::alg::min_points, kernel::alg::deg_deviation);
+	ransac_params = kernel::alg::get_ransac_params(
+		kernel::alg::epsilon,
+		kernel::alg::min_points,
+		kernel::alg::deg_deviation,
+		kernel::alg::cyl_min_r,
+		kernel::alg::cyl_max_r
+	);
 	shapes = kernel::alg::ransac(non_planar_xyz, non_planar_normals, ransac_params, { kernel::primitive_type::cylinder });
 	
 	std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> wall_clouds;
