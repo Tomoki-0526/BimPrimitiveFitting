@@ -132,7 +132,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

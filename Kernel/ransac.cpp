@@ -21,16 +21,8 @@ auto kernel::alg::get_ransac_params(float epsilon, int min_points, float deg_dev
 	return params;
 }
 
-auto kernel::alg::ransac(const pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, const pcl::PointCloud<pcl::Normal>::Ptr normals, const Efficient_ransac::Parameters& params, const std::initializer_list<primitive_type>& prim_types) -> Efficient_ransac::Shape_range
+auto kernel::alg::ransac(Pwn_vector& cgal_cloud, const Efficient_ransac::Parameters& params, const std::initializer_list<primitive_type>& prim_types) -> Efficient_ransac::Shape_range
 {
-	Pwn_vector cgal_cloud;
-	for (size_t i = 0; i < xyz->size(); ++i)
-	{
-		const pcl::PointXYZ& point = xyz->at(i);
-		const pcl::Normal& normal = normals->at(i);
-		cgal_cloud.push_back({ CGAL_kernel::Point_3(point.x, point.y, point.z), CGAL_kernel::Vector_3(normal.normal_x, normal.normal_y, normal.normal_z) });
-	}
-
 	Efficient_ransac ransac;
 	ransac.set_input(cgal_cloud);
 	for (auto type : prim_types) {

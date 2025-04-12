@@ -51,8 +51,7 @@ namespace kernel {
 		) -> Efficient_ransac::Parameters;
 
 		auto ransac(
-			const pcl::PointCloud<pcl::PointXYZ>::Ptr xyz,
-			const pcl::PointCloud<pcl::Normal>::Ptr normals,
+			Pwn_vector& cgal_cloud,
 			const Efficient_ransac::Parameters& params,
 			const std::initializer_list<primitive_type>& prim_types
 		) -> Efficient_ransac::Shape_range;

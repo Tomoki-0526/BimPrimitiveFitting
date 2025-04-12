@@ -65,7 +65,7 @@ auto main(int argc, char** argv) -> int
 	float dy = max_pt.y - min_pt.y;
 	float dz = max_pt.z - min_pt.z;
 	float scale = std::max({ dx, dy, dz });
-	kernel::alg::epsilon = 0.01f * scale;
+	kernel::alg::epsilon = 0.005f * scale;
 
 	std::cout << std::format("[Wall attributes] base elevation: {}, top elevation: {}, floor height: {}", kernel::base_elev, kernel::top_elev, kernel::floor_height) << std::endl;
 #pragma endregion
@@ -83,15 +83,26 @@ auto main(int argc, char** argv) -> int
 		kernel::alg::cyl_min_r,
 		kernel::alg::cyl_max_r
 	);
-	auto shapes = kernel::alg::ransac(xyz, normals, ransac_params, { kernel::primitive_type::plane, kernel::primitive_type::cylinder });
+	Pwn_vector cgal_cloud;
+	for (size_t i = 0; i < xyz->size(); ++i)
+	{
+		const pcl::PointXYZ& point = xyz->at(i);
+		const pcl::Normal& normal = normals->at(i);
+		cgal_cloud.push_back({ CGAL_kernel::Point_3(point.x, point.y, point.z), CGAL_kernel::Vector_3(normal.normal_x, normal.normal_y, normal.normal_z) });
+	}
+	auto shapes = kernel::alg::ransac(cgal_cloud, ransac_params, { kernel::primitive_type::plane, kernel::primitive_type::cylinder });
 	for (auto it = shapes.begin(); it != shapes.end(); ++it) {
 		if (Cylinder* cyl = dynamic_cast<Cylinder*>(it->get())) {
-			auto& indices = cyl->indices_of_assigned_points();
-			kernel::utils::extract_points_by_indices(xyz, indices, non_planar_xyz);
-			kernel::utils::extract_points_by_indices(normals, indices, non_planar_normals);
+			const auto& indices = cyl->indices_of_assigned_points();
+			size_t shape_size = indices.size();
+			for (size_t i = 0; i < shape_size; ++i) {
+				const auto& pwn = cgal_cloud[indices[i]];
+				non_planar_xyz->emplace_back(pwn.first.x(), pwn.first.y(), pwn.first.z());
+				non_planar_normals->emplace_back(pwn.second.x(), pwn.second.y(), pwn.second.z());
+			}
 		}
 	}
-#ifdef DEBUG_RANSAC
+#ifdef DEBUG_REMOVE_PLANAR
 	kernel::vis::show_cloud(non_planar_xyz);
 #endif
 
@@ -100,7 +111,7 @@ auto main(int argc, char** argv) -> int
 	dy = max_pt.y - min_pt.y;
 	dz = max_pt.z - min_pt.z;
 	scale = std::max({ dx, dy, dz });
-	kernel::alg::epsilon = 0.01f * scale;
+	kernel::alg::epsilon = 0.005f * scale;
 
 	// fit shapes
 	std::cout << "Fitting shapes..." << std::endl;
@@ -112,8 +123,15 @@ auto main(int argc, char** argv) -> int
 		kernel::alg::cyl_min_r,
 		kernel::alg::cyl_max_r
 	);
-	shapes = kernel::alg::ransac(non_planar_xyz, non_planar_normals, ransac_params, { kernel::primitive_type::cylinder });
-	
+	cgal_cloud.clear();
+	cgal_cloud.shrink_to_fit();
+	for (size_t i = 0; i < non_planar_xyz->size(); ++i)
+	{
+		const pcl::PointXYZ& point = non_planar_xyz->at(i);
+		const pcl::Normal& normal = non_planar_normals->at(i);
+		cgal_cloud.push_back({ CGAL_kernel::Point_3(point.x, point.y, point.z), CGAL_kernel::Vector_3(normal.normal_x, normal.normal_y, normal.normal_z) });
+	}
+	shapes = kernel::alg::ransac(cgal_cloud, ransac_params, { kernel::primitive_type::cylinder });
 	std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> wall_clouds;
 	for (auto it = shapes.begin(); it != shapes.end(); ++it) {
 		if (Cylinder* cyl = dynamic_cast<Cylinder*>(it->get())) {
@@ -133,19 +151,26 @@ auto main(int argc, char** argv) -> int
 
 			std::cout << "accepted." << std::endl;
 			auto wall_cloud = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
-			kernel::utils::extract_points_by_indices(non_planar_xyz, cyl->indices_of_assigned_points(), wall_cloud);
-			float x = p.x(), y = p.y(), z = p.z();
-			float nx = n.x(), ny = n.y(), nz = n.z();
-			auto wall = bim_wall::wall(wall_cloud, { x, y, z }, { nx, ny, nz }, r);
+			const auto& indices = cyl->indices_of_assigned_points();
+			size_t shape_size = indices.size();
+			for (size_t i = 0; i < shape_size; ++i) {
+				const auto& pwn = cgal_cloud[indices[i]];
+				wall_cloud->emplace_back(pwn.first.x(), pwn.first.y(), pwn.first.z());
+			}
+			auto wall = bim_wall::wall(wall_cloud, { float(p.x()), float(p.y()), float(p.z()) }, { float(n.x()), float(n.y()), float(n.z()) }, r);
 			walls.push_back(wall);
 
 			wall_clouds.push_back(wall_cloud);
 		}
 	}
-#ifdef DEBUG_RANSAC
+#ifdef DEBUG_CYLINDER_FIT
 	auto colored_cloud = kernel::vis::get_colored_cloud(wall_clouds);
 	kernel::vis::show_cloud(colored_cloud);
 #endif
+#pragma endregion
+
+#pragma region output
+
 #pragma endregion
 }
 
