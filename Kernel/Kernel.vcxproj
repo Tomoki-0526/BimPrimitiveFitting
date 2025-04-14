@@ -139,6 +139,7 @@
     <ClCompile Include="find_peaks.cpp" />
     <ClCompile Include="io.cpp" />
     <ClCompile Include="Kernel.cpp" />
+    <ClCompile Include="math.cpp" />
     <ClCompile Include="normal.cpp" />
     <ClCompile Include="ransac.cpp" />
     <ClCompile Include="surface.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="find_peaks.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="io.h" />
+    <ClInclude Include="math.h" />
     <ClInclude Include="normal.h" />
     <ClInclude Include="ransac.h" />
     <ClInclude Include="surface.h" />

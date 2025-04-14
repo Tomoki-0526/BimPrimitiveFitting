@@ -23,7 +23,7 @@ float kernel::base_elev = 0;
 float kernel::top_elev = 0;
 float kernel::floor_height = 0;
 
-// ransac parameters
+// shape config
 float kernel::alg::epsilon = 0.01;
 int kernel::alg::min_points = 500;
 float kernel::alg::deg_deviation = 5.0f;
@@ -115,7 +115,7 @@ auto main(int argc, char** argv) -> int
 
 	// fit shapes
 	std::cout << "Fitting shapes..." << std::endl;
-	std::vector<bim_wall::wall> walls;
+	std::vector<bim::wall> walls;
 	ransac_params = kernel::alg::get_ransac_params(
 		kernel::alg::epsilon,
 		kernel::alg::min_points,
@@ -157,7 +157,7 @@ auto main(int argc, char** argv) -> int
 				const auto& pwn = cgal_cloud[indices[i]];
 				wall_cloud->emplace_back(pwn.first.x(), pwn.first.y(), pwn.first.z());
 			}
-			auto wall = bim_wall::wall(wall_cloud, { float(p.x()), float(p.y()), float(p.z()) }, { float(n.x()), float(n.y()), float(n.z()) }, r);
+			auto wall = bim::wall(wall_cloud, { float(p.x()), float(p.y()), float(p.z()) }, { float(n.x()), float(n.y()), float(n.z()) }, r);
 			walls.push_back(wall);
 
 			wall_clouds.push_back(wall_cloud);

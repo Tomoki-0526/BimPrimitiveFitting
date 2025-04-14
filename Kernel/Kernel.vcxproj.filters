@@ -66,6 +66,9 @@
     <ClCompile Include="utils.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="math.cpp">
+      <Filter>源文件\algorithm</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="io.h">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="utils.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="math.h">
+      <Filter>头文件\algorithm</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

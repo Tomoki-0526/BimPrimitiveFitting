@@ -28,4 +28,8 @@ namespace kernel {
 	extern float	top_elev;
 	extern float	floor_height;
 
+	// clustering parameters
+	const  int		euc_clu_min_pts = 100;
+	const  int		euc_clu_max_pts = 100000;
+	const  float	euc_radius = 0.5f;
 }
