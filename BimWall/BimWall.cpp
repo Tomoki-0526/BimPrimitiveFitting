@@ -188,6 +188,8 @@ auto main(int argc, char** argv) -> int
 			}
 		}
 
+		std::cout << "accepted." << std::endl;
+
 	next_outer_loop:;
 	}
 #pragma endregion
