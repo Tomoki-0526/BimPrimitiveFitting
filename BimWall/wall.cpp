@@ -160,6 +160,7 @@ std::shared_ptr<bim::wall> bim::wall::get_segments()
 		derived.start_point[2] = derived.end_point[2] = derived.mid_point[2] = kernel::top_elev - derived.height;
 		derived.valid = true;
 
+		std::cout << "derived" << std::endl;
 		return std::make_shared<bim::wall>(derived);
 	}
 	else {

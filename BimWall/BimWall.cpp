@@ -169,8 +169,38 @@ auto main(int argc, char** argv) -> int
 #endif
 #pragma endregion
 
-#pragma region output
+#pragma region postprocess
+	std::cout << "BIM processing..." << std::endl;
 
+	int valid_cnt = 0;
+	size_t origin_size = walls.size();
+	for (int i = 0; i < origin_size; ++i) {
+		std::cout << std::format("wall #{}: ", i + 1);
+
+		auto& wall = walls[i];
+		if (!wall.get_arc()) {
+			continue;
+		}
+		valid_cnt++;
+
+		auto derived = wall.get_segments();
+		if (derived) {
+			valid_cnt++;
+			walls.push_back(*derived);
+		}
+	}
+#pragma endregion
+
+#pragma region output
+	for (int i = 0; i < walls.size(); ++i) {
+		if (walls[i].is_valid()) {
+			const auto& json = walls[i].serialize();
+			fs::path output_path = args.output_dir / std::format("Candidate_CurvedWall_{}.json", i + 1);
+			kernel::io::save_json(output_path, json);
+			std::cout << std::format("Save wall to {}", output_path.string()) << std::endl;
+		}
+	}
+	std::cout << std::format("Found {} valid walls from {} candidates.", valid_cnt, walls.size()) << std::endl;
 #pragma endregion
 }
 
