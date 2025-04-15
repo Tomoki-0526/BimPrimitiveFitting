@@ -102,11 +102,11 @@ void bim::wall::get_segments()
 		this->height = kernel::floor_height;
 	}
 	else {
-		if (std::abs(this->zmin - kernel::base_elev) < 0.1f) {
+		if (std::abs(this->zmin - kernel::base_elev) < 0.3f) {
 			this->start_point[2] = this->end_point[2] = this->mid_point[2] = kernel::base_elev;
 		}
 		else {
-			this->start_point[2] = this->end_point[2] = this->mid_point[2] = this->zmin;
+			this->start_point[2] = this->end_point[2] = this->mid_point[2] = kernel::top_elev - this->height;
 		}
 	}
 }

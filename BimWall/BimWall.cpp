@@ -28,7 +28,7 @@ float kernel::alg::epsilon = 0.1;
 int kernel::alg::min_points = 500;
 float kernel::alg::deg_deviation = 5.0f;
 float kernel::alg::cyl_min_r = 1.0f;
-float kernel::alg::cyl_max_r = 10.0f;
+float kernel::alg::cyl_max_r = 8.0f;
 
 auto main(int argc, char** argv) -> int
 {
