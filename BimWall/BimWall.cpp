@@ -24,7 +24,7 @@ float kernel::top_elev = 0;
 float kernel::floor_height = 0;
 
 // shape config
-float kernel::alg::epsilon = 0.01;
+float kernel::alg::epsilon = 0.1;
 int kernel::alg::min_points = 500;
 float kernel::alg::deg_deviation = 5.0f;
 float kernel::alg::cyl_min_r = 1.0f;
@@ -65,7 +65,7 @@ auto main(int argc, char** argv) -> int
 	float dy = max_pt.y - min_pt.y;
 	float dz = max_pt.z - min_pt.z;
 	float scale = std::max({ dx, dy, dz });
-	kernel::alg::epsilon = 0.005f * scale;
+	//kernel::alg::epsilon = 0.005f * scale;
 
 	std::cout << std::format("[Wall attributes] base elevation: {}, top elevation: {}, floor height: {}", kernel::base_elev, kernel::top_elev, kernel::floor_height) << std::endl;
 #pragma endregion
@@ -111,7 +111,7 @@ auto main(int argc, char** argv) -> int
 	dy = max_pt.y - min_pt.y;
 	dz = max_pt.z - min_pt.z;
 	scale = std::max({ dx, dy, dz });
-	kernel::alg::epsilon = 0.005f * scale;
+	//kernel::alg::epsilon = 0.005f * scale;
 
 	// fit shapes
 	std::cout << "Fitting shapes..." << std::endl;
@@ -172,28 +172,23 @@ auto main(int argc, char** argv) -> int
 #pragma region postprocess
 	std::cout << "BIM processing..." << std::endl;
 
-	int valid_cnt = 0;
-	size_t origin_size = walls.size();
-	for (int i = 0; i < origin_size; ++i) {
-		std::cout << std::format("wall #{}: ", i + 1);
+	for (int i = 0; i < walls.size(); ++i) {
+		std::cout << std::format("wall #{}: ", i + 1) << std::endl;
 
 		auto& wall = walls[i];
 		if (!wall.get_arc()) {
 			continue;
 		}
-		valid_cnt++;
 
-		auto derived = wall.get_segments();
-		if (derived) {
-			valid_cnt++;
-			walls.push_back(*derived);
-		}
+		wall.get_segments();
 	}
 #pragma endregion
 
 #pragma region output
+	int valid_cnt = 0;
 	for (int i = 0; i < walls.size(); ++i) {
 		if (walls[i].is_valid()) {
+			valid_cnt++;
 			const auto& json = walls[i].serialize();
 			fs::path output_path = args.output_dir / std::format("Candidate_CurvedWall_{}.json", i + 1);
 			kernel::io::save_json(output_path, json);

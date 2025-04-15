@@ -89,7 +89,7 @@ bool bim::wall::get_arc()
 	return true;
 }
 
-std::shared_ptr<bim::wall> bim::wall::get_segments()
+void bim::wall::get_segments()
 {
 	pcl::PointXYZ min_pt, max_pt;
 	pcl::getMinMax3D(*this->cloud, min_pt, max_pt);
@@ -100,73 +100,14 @@ std::shared_ptr<bim::wall> bim::wall::get_segments()
 	if (this->height > 0.5 * kernel::floor_height) {
 		this->start_point[2] = this->end_point[2] = this->mid_point[2] = kernel::base_elev;
 		this->height = kernel::floor_height;
-		return nullptr;
-	}
-
-	const float bin_size = 0.01f;
-	int grid_num = int(this->height / bin_size) + 1;
-	std::vector<float> grid(grid_num);
-	for (const auto& p : this->cloud->points) {
-		int z = int((p.z - this->zmin) / bin_size);
-		if (z < 0) z = 0;
-		if (z >= grid_num) z = grid_num - 1;
-		grid[z]++;
-	}
-
-	struct interval {
-		int st, ed;
-		int length() const { return ed - st + 1; }
-	};
-	std::vector<interval> intervals;
-	bool in_interval = false;
-	int start = 0;
-	for (int i = 0; i < grid_num; ++i) {
-		if (grid[i] > 0) {
-			if (!in_interval) {
-				in_interval = true;
-				start = i;
-			}
-		}
-		else {
-			if (in_interval) {
-				in_interval = false;
-				if (i - start > 5) {
-					intervals.push_back({ start, i - 1 });
-				}
-			}
-		}
-	}
-	if (in_interval) {
-		in_interval = false;
-		intervals.push_back({ start, grid_num - 1 });
-	}
-	std::sort(intervals.begin(), intervals.end(), [](const interval& a, const interval& b) { return a.length() > b.length(); });
-	if (intervals.size() >= 2) {
-		auto& first = intervals[0];
-		auto& second = intervals[1];
-		if (first.st > second.st) {
-			std::swap(first, second);
-		}
-		this->start_point[2] = this->end_point[2] = this->mid_point[2] = kernel::base_elev;
-		this->height = first.length() * bin_size;
-
-		wall derived(this->cloud, this->pos, this->axis, this->radius);
-		derived.zmin = this->zmin + first.st * bin_size;
-		derived.zmax = this->zmin + first.ed * bin_size;
-		derived.height = second.length() * bin_size;
-		derived.start_point = this->start_point;
-		derived.end_point = this->end_point;
-		derived.mid_point = this->mid_point;
-		derived.start_point[2] = derived.end_point[2] = derived.mid_point[2] = kernel::top_elev - derived.height;
-		derived.valid = true;
-
-		std::cout << "derived" << std::endl;
-		return std::make_shared<bim::wall>(derived);
 	}
 	else {
-		this->start_point[2] = this->end_point[2] = this->mid_point[2] = kernel::base_elev;
-		this->height = kernel::floor_height;
-		return nullptr;
+		if (std::abs(this->zmin - kernel::base_elev) < 0.1f) {
+			this->start_point[2] = this->end_point[2] = this->mid_point[2] = kernel::base_elev;
+		}
+		else {
+			this->start_point[2] = this->end_point[2] = this->mid_point[2] = this->zmin;
+		}
 	}
 }
 
