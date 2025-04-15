@@ -17,7 +17,7 @@ bim::wall::wall(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, const Eigen::Vector3f
 {
 }
 
-bool bim::wall::get_arc()
+bool bim::wall::calc_arc()
 {
 	std::vector<pcl::PointIndices> cluster_indices;
 	kernel::alg::dbscan(this->cloud, kernel::euc_clu_min_pts, kernel::euc_clu_max_pts, kernel::euc_radius, cluster_indices);
@@ -89,7 +89,7 @@ bool bim::wall::get_arc()
 	return true;
 }
 
-void bim::wall::get_segments()
+void bim::wall::calc_elev_height()
 {
 	pcl::PointXYZ min_pt, max_pt;
 	pcl::getMinMax3D(*this->cloud, min_pt, max_pt);
@@ -109,6 +109,17 @@ void bim::wall::get_segments()
 			this->start_point[2] = this->end_point[2] = this->mid_point[2] = kernel::top_elev - this->height;
 		}
 	}
+}
+
+bool bim::wall::overlap(const wall& other)
+{
+	float offset = std::abs(this->radius - other.radius) + this->axis.cross(other.axis).norm() + this->axis.cross(this->pos - other.pos).norm();
+	if (offset < 2.0) {
+		std::cout << "Too close to existing instance, skip..." << std::endl;
+		this->valid = false;
+		return true;
+	}
+	return false;
 }
 
 nlohmann::json bim::wall::serialize() const

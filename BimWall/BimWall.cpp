@@ -173,14 +173,22 @@ auto main(int argc, char** argv) -> int
 	std::cout << "BIM processing..." << std::endl;
 
 	for (int i = 0; i < walls.size(); ++i) {
-		std::cout << std::format("wall #{}: ", i + 1) << std::endl;
+		std::cout << std::format("wall #{}: ", i + 1);
 
 		auto& wall = walls[i];
-		if (!wall.get_arc()) {
+		if (!wall.calc_arc()) {
 			continue;
 		}
 
-		wall.get_segments();
+		wall.calc_elev_height();
+
+		for (int j = i - 1; j > 0; --j) {
+			if (wall.overlap(walls[j])) {
+				goto next_outer_loop;
+			}
+		}
+
+	next_outer_loop:;
 	}
 #pragma endregion
 

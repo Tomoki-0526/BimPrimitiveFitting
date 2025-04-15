@@ -20,8 +20,9 @@ namespace bim {
 	public:
 		wall(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, const Eigen::Vector3f& pos, const Eigen::Vector3f& axis, float radius);
 		
-		bool get_arc();
-		void get_segments();
+		bool calc_arc();
+		void calc_elev_height();
+		bool overlap(const wall& other);
 
 		nlohmann::json serialize() const;
 	};
