@@ -163,6 +163,9 @@ auto main(int argc, char** argv) -> int
 			wall_clouds.push_back(wall_cloud);
 		}
 	}
+	std::sort(walls.begin(), walls.end(), [](const bim::wall& a, const bim::wall& b) {
+		return a.get_cloud()->size() > b.get_cloud()->size();
+		});
 #ifdef DEBUG_CYLINDER_FIT
 	auto colored_cloud = kernel::vis::get_colored_cloud(wall_clouds);
 	kernel::vis::show_cloud(colored_cloud);
@@ -175,15 +178,16 @@ auto main(int argc, char** argv) -> int
 	for (int i = 0; i < walls.size(); ++i) {
 		std::cout << std::format("wall #{}: ", i + 1);
 
-		auto& wall = walls[i];
-		if (!wall.calc_arc()) {
+		if (!walls[i].calc_arc()) {
+			walls[i].set_valid(false);
 			continue;
 		}
 
-		wall.calc_elev_height();
+		walls[i].calc_elev_height();
 
 		for (int j = i - 1; j > 0; --j) {
-			if (wall.overlap(walls[j])) {
+			if (walls[j].is_valid() && walls[j].overlap(walls[i])) {
+				walls[i].set_valid(false);
 				goto next_outer_loop;
 			}
 		}

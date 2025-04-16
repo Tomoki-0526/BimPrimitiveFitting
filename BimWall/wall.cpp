@@ -50,14 +50,12 @@ bool bim::wall::calc_arc()
 			}
 		}
 	}
-	if (range < 45) {
+	if (range < 40) {
 		std::cout << "The range is too narrow, skip..." << std::endl;
-		this->valid = false;
 		return false;
 	}
 	else if (range > 350) {
 		std::cout << "Closed curved walls are not supported now, skip..." << std::endl;
-		this->valid = false;
 		return false;
 	}
 	int deg_st = deg_ed - range;
@@ -113,12 +111,29 @@ void bim::wall::calc_elev_height()
 
 bool bim::wall::overlap(const wall& other)
 {
-	float offset = std::abs(this->radius - other.radius) + this->axis.cross(other.axis).norm() + this->axis.cross(this->pos - other.pos).norm();
-	if (offset < 2.0) {
-		std::cout << "Too close to existing instance, skip..." << std::endl;
-		this->valid = false;
-		return true;
+	pcl::PointXYZ this_min_pt, this_max_pt, other_min_pt, other_max_pt;
+	pcl::getMinMax3D(*this->cloud, this_min_pt, this_max_pt);
+	pcl::getMinMax3D(*other.cloud, other_min_pt, other_max_pt);
+	
+	bool is_overlapping = 
+		(this_min_pt.x <= other_max_pt.x && this_max_pt.x >= other_min_pt.x) &&
+		(this_min_pt.y <= other_max_pt.y && this_max_pt.y >= other_min_pt.y) &&
+		(this_min_pt.z <= other_max_pt.z && this_max_pt.z >= other_min_pt.z);
+	
+	if (is_overlapping) {
+		float x_overlap = std::max(0.0f, std::min(this_max_pt.x, other_max_pt.x) - std::max(this_min_pt.x, other_min_pt.x));
+		float y_overlap = std::max(0.0f, std::min(this_max_pt.y, other_max_pt.y) - std::max(this_min_pt.y, other_min_pt.y));
+		float z_overlap = std::max(0.0f, std::min(this_max_pt.z, other_max_pt.z) - std::max(this_min_pt.z, other_min_pt.z));
+		float overlap_volume = x_overlap * y_overlap * z_overlap;
+		float this_volume = (this_max_pt.x - this_min_pt.x) * (this_max_pt.y - this_min_pt.y) * (this_max_pt.z - this_min_pt.z);
+		float other_volume = (other_max_pt.x - other_min_pt.x) * (other_max_pt.y - other_min_pt.y) * (other_max_pt.z - other_min_pt.z);
+		float iou = overlap_volume / (this_volume + other_volume - overlap_volume);
+
+		if (iou > 0.4f) {
+			return true;
+		}
 	}
+
 	return false;
 }
 
