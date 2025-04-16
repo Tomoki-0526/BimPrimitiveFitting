@@ -65,7 +65,6 @@ auto main(int argc, char** argv) -> int
 	float dy = max_pt.y - min_pt.y;
 	float dz = max_pt.z - min_pt.z;
 	float scale = std::max({ dx, dy, dz });
-	//kernel::alg::epsilon = 0.005f * scale;
 
 	std::cout << std::format("[Wall attributes] base elevation: {}, top elevation: {}, floor height: {}", kernel::base_elev, kernel::top_elev, kernel::floor_height) << std::endl;
 #pragma endregion
@@ -102,16 +101,12 @@ auto main(int argc, char** argv) -> int
 			}
 		}
 	}
-#ifdef DEBUG_REMOVE_PLANAR
-	kernel::vis::show_cloud(non_planar_xyz);
-#endif
 
 	pcl::getMinMax3D(*non_planar_xyz, min_pt, max_pt);
 	dx = max_pt.x - min_pt.x;
 	dy = max_pt.y - min_pt.y;
 	dz = max_pt.z - min_pt.z;
 	scale = std::max({ dx, dy, dz });
-	//kernel::alg::epsilon = 0.005f * scale;
 
 	// fit shapes
 	std::cout << "Fitting shapes..." << std::endl;
@@ -141,7 +136,7 @@ auto main(int argc, char** argv) -> int
 			const auto& n = cyl->axis().to_vector();
 			float r = cyl->radius();
 			if (std::abs(n.z()) < 0.9) {
-				std::cout << std::format("axis ({}, {}, {}) inclined.", n.x(), n.y(), n.z()) << std::endl;
+				std::cout << std::format("axis ({:.4f}, {:.4f}, {:.4f}) not vertical.", n.x(), n.y(), n.z()) << std::endl;
 				continue;
 			}
 			if (r < kernel::alg::cyl_min_r || r > kernel::alg::cyl_max_r) {
@@ -192,7 +187,7 @@ auto main(int argc, char** argv) -> int
 			}
 		}
 
-		std::cout << "accepted." << std::endl;
+		std::cout << "Accepted." << std::endl;
 
 	next_outer_loop:;
 	}

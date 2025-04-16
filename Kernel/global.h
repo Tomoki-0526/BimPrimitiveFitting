@@ -1,7 +1,6 @@
 #pragma once
 
 #define DEBUG_ARGUMENTS
-//#define DEBUG_REMOVE_PLANAR
 #define DEBUG_CYLINDER_FIT
 
 namespace kernel {

@@ -129,7 +129,8 @@ bool bim::wall::overlap(const wall& other)
 		float other_volume = (other_max_pt.x - other_min_pt.x) * (other_max_pt.y - other_min_pt.y) * (other_max_pt.z - other_min_pt.z);
 		float iou = overlap_volume / (this_volume + other_volume - overlap_volume);
 
-		if (iou > 0.4f) {
+		if (iou > 0.3f) {
+			std::cout << "Overlapped with existing wall, skip..." << std::endl;
 			return true;
 		}
 	}
