@@ -18,13 +18,18 @@ namespace bim {
 		std::vector<float> mid_point;
 
 	public:
-		wall(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, const Eigen::Vector3f& pos, const Eigen::Vector3f& axis, float radius);
+		wall(
+			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+			const Eigen::Vector3f& pos,
+			const Eigen::Vector3f& axis,
+			float radius
+		);
 		
-		bool calc_arc();
-		void calc_elev_height();
-		bool overlap(const wall& other);
+		auto calc_arc() -> bool;
+		auto calc_elev_height() -> void;
+		virtual auto overlap(const wall& other) -> bool;
 
-		nlohmann::json serialize() const;
+		virtual auto serialize() const -> nlohmann::json;
 	};
 }
 

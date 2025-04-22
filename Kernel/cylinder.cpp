@@ -6,3 +6,13 @@ kernel::geom::cylinder::cylinder(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, cons
 {
 }
 
+auto kernel::geom::cylinder::set_radius(float radius) -> void
+{
+	this->radius = radius;
+}
+
+auto kernel::geom::cylinder::get_radius() const -> float
+{
+	return this->radius;
+}
+

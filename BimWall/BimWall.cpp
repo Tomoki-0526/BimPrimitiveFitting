@@ -4,8 +4,6 @@
 #include <string>
 
 #include <pcl/common/common.h>
-#include <pcl/filters/extract_indices.h>
-#include <pcl/io/ply_io.h>
 
 #include "Kernel/global.h"
 #include "Kernel/io.h"
@@ -15,6 +13,8 @@
 #include "Kernel/vis.h"
 
 #include "wall.h"
+
+//#define DEBUG_CYLINDER_FIT
 
 namespace fs = std::filesystem;
 
@@ -37,10 +37,6 @@ auto main(int argc, char** argv) -> int
 #pragma region init
 	// parse arguments
 	kernel::io::args args(argc, argv);
-#ifdef DEBUG_ARGUMENTS
-	args.input_file = "D:\\scan2bim\\ZZ-01\\wall.txt";
-	args.output_dir = "D:\\scan2bim\\ZZ-01\\cgal";
-#endif
 
 	// load point cloud
 	auto xyz = kernel::io::load_cloud(args.input_file);
@@ -61,10 +57,6 @@ auto main(int argc, char** argv) -> int
 	kernel::base_elev = min_pt.z;
 	kernel::top_elev = max_pt.z;
 	kernel::floor_height = max_pt.z - min_pt.z;
-	float dx = max_pt.x - min_pt.x;
-	float dy = max_pt.y - min_pt.y;
-	float dz = max_pt.z - min_pt.z;
-	float scale = std::max({ dx, dy, dz });
 
 	std::cout << std::format("[Wall attributes] base elevation: {}, top elevation: {}, floor height: {}", kernel::base_elev, kernel::top_elev, kernel::floor_height) << std::endl;
 #pragma endregion
@@ -89,7 +81,14 @@ auto main(int argc, char** argv) -> int
 		const pcl::Normal& normal = normals->at(i);
 		cgal_cloud.push_back({ CGAL_kernel::Point_3(point.x, point.y, point.z), CGAL_kernel::Vector_3(normal.normal_x, normal.normal_y, normal.normal_z) });
 	}
-	auto shapes = kernel::alg::ransac(cgal_cloud, ransac_params, { kernel::primitive_type::plane, kernel::primitive_type::cylinder });
+	auto shapes = kernel::alg::ransac(
+		cgal_cloud, 
+		ransac_params, 
+		{
+			kernel::primitive_type::plane, 
+			kernel::primitive_type::cylinder 
+		}
+	);
 	for (auto it = shapes.begin(); it != shapes.end(); ++it) {
 		if (Cylinder* cyl = dynamic_cast<Cylinder*>(it->get())) {
 			const auto& indices = cyl->indices_of_assigned_points();
@@ -102,15 +101,8 @@ auto main(int argc, char** argv) -> int
 		}
 	}
 
-	pcl::getMinMax3D(*non_planar_xyz, min_pt, max_pt);
-	dx = max_pt.x - min_pt.x;
-	dy = max_pt.y - min_pt.y;
-	dz = max_pt.z - min_pt.z;
-	scale = std::max({ dx, dy, dz });
-
 	// fit shapes
 	std::cout << "Fitting shapes..." << std::endl;
-	std::vector<bim::wall> walls;
 	ransac_params = kernel::alg::get_ransac_params(
 		kernel::alg::epsilon,
 		kernel::alg::min_points,
@@ -126,7 +118,14 @@ auto main(int argc, char** argv) -> int
 		const pcl::Normal& normal = non_planar_normals->at(i);
 		cgal_cloud.push_back({ CGAL_kernel::Point_3(point.x, point.y, point.z), CGAL_kernel::Vector_3(normal.normal_x, normal.normal_y, normal.normal_z) });
 	}
-	shapes = kernel::alg::ransac(cgal_cloud, ransac_params, { kernel::primitive_type::cylinder });
+	shapes = kernel::alg::ransac(
+		cgal_cloud,
+		ransac_params, 
+		{
+			kernel::primitive_type::cylinder 
+		}
+	);
+	std::vector<bim::wall> walls;
 	std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> wall_clouds;
 	for (auto it = shapes.begin(); it != shapes.end(); ++it) {
 		if (Cylinder* cyl = dynamic_cast<Cylinder*>(it->get())) {
@@ -152,7 +151,20 @@ auto main(int argc, char** argv) -> int
 				const auto& pwn = cgal_cloud[indices[i]];
 				wall_cloud->emplace_back(pwn.first.x(), pwn.first.y(), pwn.first.z());
 			}
-			auto wall = bim::wall(wall_cloud, { float(p.x()), float(p.y()), float(p.z()) }, { float(n.x()), float(n.y()), float(n.z()) }, r);
+			auto wall = bim::wall(
+				wall_cloud, 
+				{ 
+					float(p.x()), 
+					float(p.y()), 
+					float(p.z()) 
+				}, 
+				{ 
+					float(n.x()), 
+					float(n.y()), 
+					float(n.z()) 
+				}, 
+				r
+			);
 			walls.push_back(wall);
 
 			wall_clouds.push_back(wall_cloud);
@@ -170,7 +182,29 @@ auto main(int argc, char** argv) -> int
 #pragma region postprocess
 	std::cout << "BIM processing..." << std::endl;
 
+	if (walls.empty()) {
+		std::cout << "No wall found." << std::endl;
+		return 0;
+	}
+
+	// deduplicate
 	for (int i = 0; i < walls.size(); ++i) {
+		if (!walls[i].is_valid()) {
+			continue;
+		}
+		for (int j = i + 1; j < walls.size(); ++j) {
+			if (walls[j].is_valid() && walls[i].overlap(walls[j])) {
+				walls[i].merge_cloud(walls[j].get_cloud());
+				walls[j].set_valid(false);
+			}
+		}
+	}
+
+	// height & range
+	for (int i = 0; i < walls.size(); ++i) {
+		if (!walls[i].is_valid()) {
+			continue;
+		}
 		std::cout << std::format("wall #{}: ", i + 1);
 
 		if (!walls[i].calc_arc()) {
@@ -180,16 +214,7 @@ auto main(int argc, char** argv) -> int
 
 		walls[i].calc_elev_height();
 
-		for (int j = i - 1; j > 0; --j) {
-			if (walls[j].is_valid() && walls[j].overlap(walls[i])) {
-				walls[i].set_valid(false);
-				goto next_outer_loop;
-			}
-		}
-
 		std::cout << "Accepted." << std::endl;
-
-	next_outer_loop:;
 	}
 #pragma endregion
 
@@ -206,5 +231,7 @@ auto main(int argc, char** argv) -> int
 	}
 	std::cout << std::format("Found {} valid walls from {} candidates.", valid_cnt, walls.size()) << std::endl;
 #pragma endregion
+
+	return 0;
 }
 

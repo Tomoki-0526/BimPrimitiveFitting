@@ -1,8 +1,5 @@
 #pragma once
 
-#define DEBUG_ARGUMENTS
-#define DEBUG_CYLINDER_FIT
-
 namespace kernel {
 	enum bim_category {
 		none,

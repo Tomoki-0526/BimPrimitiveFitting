@@ -5,19 +5,18 @@
 #include "Kernel/math.h"
 #include "Kernel/utils.h"
 
-#include <pcl/common/common.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/segmentation/extract_clusters.h>
 
 bim::wall::wall(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, const Eigen::Vector3f& pos, const Eigen::Vector3f& axis, float radius)
 	: cylinder(cloud, pos, axis, radius)
-	, zmax(0)
-	, zmin(0)
-	, height(0)
 {
+	this->zmax = this->max_pt.z;
+	this->zmin = this->min_pt.z;
+	this->height = this->zmax - this->zmin;
 }
 
-bool bim::wall::calc_arc()
+auto bim::wall::calc_arc() -> bool
 {
 	std::vector<pcl::PointIndices> cluster_indices;
 	kernel::alg::dbscan(this->cloud, kernel::euc_clu_min_pts, kernel::euc_clu_max_pts, kernel::euc_radius, cluster_indices);
@@ -87,14 +86,8 @@ bool bim::wall::calc_arc()
 	return true;
 }
 
-void bim::wall::calc_elev_height()
+auto bim::wall::calc_elev_height() -> void
 {
-	pcl::PointXYZ min_pt, max_pt;
-	pcl::getMinMax3D(*this->cloud, min_pt, max_pt);
-	this->zmax = max_pt.z;
-	this->zmin = min_pt.z;
-
-	this->height = this->zmax - this->zmin;
 	if (this->height > 0.5 * kernel::floor_height) {
 		this->start_point[2] = this->end_point[2] = this->mid_point[2] = kernel::base_elev;
 		this->height = kernel::floor_height;
@@ -109,24 +102,20 @@ void bim::wall::calc_elev_height()
 	}
 }
 
-bool bim::wall::overlap(const wall& other)
+auto bim::wall::overlap(const wall& other) -> bool
 {
-	pcl::PointXYZ this_min_pt, this_max_pt, other_min_pt, other_max_pt;
-	pcl::getMinMax3D(*this->cloud, this_min_pt, this_max_pt);
-	pcl::getMinMax3D(*other.cloud, other_min_pt, other_max_pt);
-	
 	bool is_overlapping = 
-		(this_min_pt.x <= other_max_pt.x && this_max_pt.x >= other_min_pt.x) &&
-		(this_min_pt.y <= other_max_pt.y && this_max_pt.y >= other_min_pt.y) &&
-		(this_min_pt.z <= other_max_pt.z && this_max_pt.z >= other_min_pt.z);
+		(this->min_pt.x <= other.max_pt.x && this->max_pt.x >= other.min_pt.x) &&
+		(this->min_pt.y <= other.max_pt.y && this->max_pt.y >= other.min_pt.y) &&
+		(this->min_pt.z <= other.max_pt.z && this->max_pt.z >= other.min_pt.z);
 	
 	if (is_overlapping) {
-		float x_overlap = std::max(0.0f, std::min(this_max_pt.x, other_max_pt.x) - std::max(this_min_pt.x, other_min_pt.x));
-		float y_overlap = std::max(0.0f, std::min(this_max_pt.y, other_max_pt.y) - std::max(this_min_pt.y, other_min_pt.y));
-		float z_overlap = std::max(0.0f, std::min(this_max_pt.z, other_max_pt.z) - std::max(this_min_pt.z, other_min_pt.z));
+		float x_overlap = std::max(0.0f, std::min(this->max_pt.x, other.max_pt.x) - std::max(this->min_pt.x, other.min_pt.x));
+		float y_overlap = std::max(0.0f, std::min(this->max_pt.y, other.max_pt.y) - std::max(this->min_pt.y, other.min_pt.y));
+		float z_overlap = std::max(0.0f, std::min(this->max_pt.z, other.max_pt.z) - std::max(this->min_pt.z, other.min_pt.z));
 		float overlap_volume = x_overlap * y_overlap * z_overlap;
-		float this_volume = (this_max_pt.x - this_min_pt.x) * (this_max_pt.y - this_min_pt.y) * (this_max_pt.z - this_min_pt.z);
-		float other_volume = (other_max_pt.x - other_min_pt.x) * (other_max_pt.y - other_min_pt.y) * (other_max_pt.z - other_min_pt.z);
+		float this_volume = (this->max_pt.x - this->min_pt.x) * (this->max_pt.y - this->min_pt.y) * (this->max_pt.z - this->min_pt.z);
+		float other_volume = (other.max_pt.x - other.min_pt.x) * (other.max_pt.y - other.min_pt.y) * (other.max_pt.z - other.min_pt.z);
 		float iou = overlap_volume / (this_volume + other_volume - overlap_volume);
 
 		if (iou > 0.3f) {
@@ -138,7 +127,7 @@ bool bim::wall::overlap(const wall& other)
 	return false;
 }
 
-nlohmann::json bim::wall::serialize() const
+auto bim::wall::serialize() const -> nlohmann::json
 {
 	nlohmann::json obj;
 	obj["typeName"] = "GbpWallCircular";

@@ -28,7 +28,7 @@ kernel::io::args::args(int argc, char** argv)
     }
 
     this->input_file = parser.get<std::string>("--input");
-    if (!parser.is_used("--output")) {
+    if (parser.is_used("--output") || parser.is_used("-o")) {
         this->output_dir = parser.get<std::string>("--output");
         if (!fs::exists(output_dir)) {
             if (!fs::create_directories(output_dir)) {

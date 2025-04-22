@@ -6,6 +6,10 @@
 
 namespace kernel {
 	namespace alg {
+		extern int min_cluster_size;
+		extern int max_cluster_size;
+		extern float cluster_radius;
+
 		auto region_growing(
 			pcl::PointCloud<pcl::PointXYZ>::Ptr xyz, 
 			pcl::PointCloud<pcl::Normal>::Ptr normals, 
