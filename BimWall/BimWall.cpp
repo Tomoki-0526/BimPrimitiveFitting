@@ -173,10 +173,6 @@ auto main(int argc, char** argv) -> int
 	std::sort(walls.begin(), walls.end(), [](const bim::wall& a, const bim::wall& b) {
 		return a.get_cloud()->size() > b.get_cloud()->size();
 		});
-#ifdef DEBUG_CYLINDER_FIT
-	auto colored_cloud = kernel::vis::get_colored_cloud(wall_clouds);
-	kernel::vis::show_cloud(colored_cloud);
-#endif
 #pragma endregion
 
 #pragma region postprocess

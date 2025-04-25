@@ -8,6 +8,7 @@
 #include "Kernel/normal.h"
 #include "Kernel/ransac.h"
 #include "Kernel/utils.h"
+#include "Kernel/vis.h"
 
 #include "column.h"
 
@@ -19,13 +20,13 @@ float kernel::top_elev = 0;
 float kernel::floor_height = 0;
 
 // cluster config
-int kernel::alg::min_cluster_size = 500;
-int kernel::alg::max_cluster_size = 2000;
+int kernel::alg::min_cluster_size = 100;
+int kernel::alg::max_cluster_size = 10000;
 float kernel::alg::cluster_radius = 0.2f;
 
 // shape config
 float kernel::alg::epsilon = 0.1;
-int kernel::alg::min_points = 500;
+int kernel::alg::min_points = 100;
 float kernel::alg::deg_deviation = 5.0f;
 float kernel::alg::cyl_min_r = 0.0f;
 float kernel::alg::cyl_max_r = 2.0f;
@@ -37,10 +38,6 @@ auto main(int argc, char** argv) -> int
 #pragma region init
 	// parse arguments
 	kernel::io::args args(argc, argv);
-#ifdef DEBUG_ARGUMENTS
-	args.input_file = "D:\\scan2bim\\ZZ-01\\wall.txt";
-	args.output_dir = "D:\\scan2bim\\ZZ-01\\cgal";
-#endif
 
 	// load point cloud
 	auto xyz = kernel::io::load_cloud(args.input_file);
@@ -69,6 +66,10 @@ auto main(int argc, char** argv) -> int
 
 	std::vector<pcl::PointIndices> clusters_indices;
 	kernel::alg::dbscan(xyz, kernel::alg::min_cluster_size, kernel::alg::max_cluster_size, kernel::alg::cluster_radius, clusters_indices);
+
+	auto colored_cloud = kernel::vis::get_colored_cloud(xyz, clusters_indices);
+	kernel::vis::show_cloud(colored_cloud);
+
 	size_t cylinder_count = 0;
 	std::vector<bim::column> columns;
 	std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> column_clouds;
